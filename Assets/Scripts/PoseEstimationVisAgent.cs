@@ -51,7 +51,7 @@ public class PoseEstimationVisAgent : Agent
 
     private int steps = 0;
 
-    int minSteps = 50;
+    int minSteps = 10;
     public bool collisionState = false;
 
     // private List<CollisionCheck> colliders = new List<CollisionCheck>();
@@ -90,8 +90,8 @@ public class PoseEstimationVisAgent : Agent
         // Debug.Log("Episode begin");
         steps = 0;
         // envGenerator.getNewEnv(new Vector3(0f,1f,0f), new Vector3(0f,0f,1f), target.transform.localPosition);
-        // seamEnv envPara = xmlloader.getNewPoint();
-        seamEnv envPara = null;
+        seamEnv envPara = xmlloader.getNewPoint();
+        // seamEnv envPara = null;
         if (envPara != null)
         {
             setAgent(envPara.normal1, envPara.normal2, envPara.pos);
@@ -114,37 +114,26 @@ public class PoseEstimationVisAgent : Agent
 
     public void setAgent(Vector3 inNormal1, Vector3 inNormal2, Vector3 spot)
     {
-        Debug.Log($"forw z {this.transform.forward}");
-        Debug.Log($"up y {this.transform.up}");
-        Debug.Log($"right x {this.transform.right}");
-        Debug.Log(this.transform.localEulerAngles);
         // // inNormal1 = new Vector3(inNormal1.x, inNormal1.z, inNormal1.y);
         // // inNormal2 = new Vector3(inNormal2.x, inNormal2.z, inNormal2.y);
-        inNormal1 = new Vector3(1.0f,0.0f,0.0f);
-        // inNormal1 = new Vector3(0.0f,1.0f,0.0f);
-        // inNormal1 = new Vector3(0.0f,0.0f,1.0f);
-        inNormal2 = new Vector3(0.0f,0.0f,1.0f);
-        // inNormal2 = new Vector3(0.0f,1.0f,0.0f);
+        Debug.Log(inNormal1);
+        Debug.Log(inNormal2);
         this.normal1 = inNormal1.normalized;
         this.normal2 = inNormal2.normalized;
-        Debug.Log($"n1 {normal1}");
-        Debug.Log($"n2 {normal2}");
         Quaternion rot = new Quaternion();
         rot.SetLookRotation(normal1, normal2);
-
-        parent.rotation = rot;
-        // this.gameObject.transform.rotation = Quaternion.LookRotation(normal1, normal2);
-        Debug.Log($"forw z {this.transform.forward}");
-        Debug.Log($"up y {this.transform.up}");
-        Debug.Log($"right x {this.transform.right}");
-        Debug.Log(this.transform.localEulerAngles);
-        // angleVector = (normal1 + normal2).normalized;
+        Debug.Log(parent.localEulerAngles);
+        parent.localRotation = Quaternion.Euler(-90, 0,0) * rot;
+        Vector3 angle = rotationToHalf(parent.localEulerAngles);
+        if (Mathf.Abs(Mathf.Abs(angle.y)-90) < 45)
+        {
+            parent.localEulerAngles = angle + new Vector3(0f,-180f+angle.z,0f);
+        }
+        // parent.localRotation = Quaternion.Euler(-90, 0,0) * rot;
+        // parent.localRotation = rot;
+        // Vector3 addedRot = parent.localEulerAngles + new Vector3(-90f,0f,0f);
+        // parent.localEulerAngles = addedRot;
         parent.localPosition = spot;
-        // this.transform.localPosition = spot;
-        // this.transform.LookAt((normal1 + normal2));
-        // angleVector = this.transform.localEulerAngles;
-        // angleVector = new Vector3(-45f,0f,0f);
-        // this.transform.localEulerAngles += angleVector;
         this.transform.localEulerAngles = new Vector3(-45f,0f,0f);
     }
 

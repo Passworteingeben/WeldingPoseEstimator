@@ -29,7 +29,7 @@ public class EnvGenerator : MonoBehaviour
             target = setSphere(new Vector3(-0.25f,0.1f,0.1f), new Vector3(0,0,0), new Vector3(0.3f, 0.3f, 0.3f), name : "target");
             target.tag ="target";
         }
-        Material newMat = Resources.Load("targetMaterial", typeof(Material)) as Material;
+        Material newMat = Resources.Load("Materials/green", typeof(Material)) as Material;
         target.GetComponent<MeshRenderer>().material = newMat;
         if (base1 == null)
         {

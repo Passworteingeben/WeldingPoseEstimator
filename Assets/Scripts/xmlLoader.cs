@@ -57,6 +57,7 @@ public class xmlLoader : MonoBehaviour
         // Debug.Log(instanceNames[0]);
         // getNewDoc(instanceNames[0]);
         // instanciateScene(instanceNames[0]);
+        // loadFull(path);
     }
 
     public void loadFull(string path)
@@ -154,20 +155,27 @@ public class xmlLoader : MonoBehaviour
                 Vector3 pos =seam.frameList[i].pos;
                 pos.x = -pos.x;
                 GameObject go;
+                GameObject tool;
                 if (seam.WkzName == "MRW510_10GH")
                 {
                     // go = GameObject.Instantiate(torch_1, pos, ExtractRotation(seam.frameList[i]));
-                    go = GameObject.Instantiate(torch_1, pos, QuaternionFromFrame(seam.frameList[i]));
+                    // go = GameObject.Instantiate(torch_1, pos, QuaternionFromFrame(seam.frameList[i]));
+                    tool = torch_1;
                 }
                 else
                 {
+                    tool = torch_2;
                     // go = GameObject.Instantiate(torch_2, pos, ExtractRotation(seam.frameList[i]));
-                    go = GameObject.Instantiate(torch_2, pos, QuaternionFromFrame(seam.frameList[i]));
                 }
-                // go.transform.position = seam.frameList[0].pos;
-                // float z = go.transform.localEulerAngles.z <=180 ? go.transform.localEulerAngles.z : (go.transform.localEulerAngles.z-360)%360;
-                go.transform.localEulerAngles = new Vector3 (go.transform.localEulerAngles.x, -go.transform.localEulerAngles.y, go.transform.localEulerAngles.z);
-                // Debug.Log(seam.frameList[i].pos);
+                // go = GameObject.Instantiate(tool, pos, QuaternionFromFrame(seam.frameList[i]));
+                go = GameObject.Instantiate(tool);
+                Matrix4x4 tf = getMatrixFromFrame(seam.frameList[i]);
+                go.transform.localRotation = tf.rotation;
+                go.transform.localPosition = pos;
+                // // go.transform.position = seam.frameList[0].pos;
+                // // float z = go.transform.localEulerAngles.z <=180 ? go.transform.localEulerAngles.z : (go.transform.localEulerAngles.z-360)%360;
+                // go.transform.localEulerAngles = new Vector3 (go.transform.localEulerAngles.x, -go.transform.localEulerAngles.y, go.transform.localEulerAngles.z);
+                // // Debug.Log(seam.frameList[i].pos);
                 if (root != null)
                 {
                     go.transform.SetParent(root.transform);
@@ -179,7 +187,7 @@ public class xmlLoader : MonoBehaviour
         }
         // transform scene to easier to use scale and rotation
         root.transform.localScale = Vector3.one * 0.006f;
-        // root.transform.localEulerAngles = new Vector3(-90f,0,0);
+        root.transform.localEulerAngles = new Vector3(-90f,0,0);
         // get points after transformation
         for (int i = 0; i < envPoints.Count; i++)
         {
@@ -195,10 +203,10 @@ public class xmlLoader : MonoBehaviour
 
     public seamEnv getNewPoint()
     {
-        if (currentPoint==0)
-        {
-            currentPoint =60;
-        }
+        // if (currentPoint==0)
+        // {
+        //     currentPoint =60;
+        // }
         if (currentPoint < envPoints.Count)
         {
             seamEnv point = envPoints[currentPoint];
@@ -355,6 +363,17 @@ public class xmlLoader : MonoBehaviour
         Debug.Log(upwards);
 
         return Quaternion.LookRotation(forward, upwards);
+    }
+
+    // https://docs.unity3d.com/ScriptReference/Matrix4x4.html
+    public static Matrix4x4 getMatrixFromFrame(frameClass frame)
+    {
+        Matrix4x4 tf = new Matrix4x4();
+        tf.SetRow(0, new Vector4(frame.XVek[0], frame.YVek[0], frame.ZVek[0], frame.pos[0]));
+        tf.SetRow(1, new Vector4(frame.XVek[1], frame.YVek[1], frame.ZVek[0], frame.pos[1]));
+        tf.SetRow(2, new Vector4(frame.XVek[2], frame.YVek[2], frame.ZVek[0], frame.pos[2]));
+        tf.SetRow(3, new Vector4(0,0,0,1));
+        return tf;
     }
 }
 
