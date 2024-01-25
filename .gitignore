@@ -1,0 +1,13 @@
+Library
+Temp
+Logs
+MemoryCaptures
+obj
+UserSettings
+.vs
+*.csproj
+*.sln
+results
+Assets/Solutions
+*.meta
+*timers.json
