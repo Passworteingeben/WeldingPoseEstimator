@@ -1,10 +1,10 @@
 // using System.Collections;
-// using System.Collections.Generic;
-using UnityEngine;
 // using System.Xml;
 // using System.Xml.Serialization;
 // using System.Xml.Linq;
 // using System.Globalization;
+using System.Collections.Generic;
+using UnityEngine;
 using System.IO;
 using System.Linq;
 using xmlClass;
@@ -46,7 +46,7 @@ public class xmlLoader : MonoBehaviour
 
     private Material defaultMaterial;
 
-    public List<seamEnv> envPoints;
+    public List<seamEnv> envPoints = new List<seamEnv>();
 
     // Start is called before the first frame update
     void Start()
@@ -54,8 +54,9 @@ public class xmlLoader : MonoBehaviour
         // load_mesh(torch_1, PATH_TORCH_1);
         // load_mesh(torch_2, PATH_TORCH_2);
         instanceNames = getInstances();
-        getNewDoc();
-        instanciateScene("201910204483_R1");
+        // Debug.Log(instanceNames[0]);
+        // getNewDoc(instanceNames[0]);
+        // instanciateScene(instanceNames[0]);
     }
 
     public void loadFull(string path)
@@ -69,7 +70,7 @@ public class xmlLoader : MonoBehaviour
             {
                 // GameObject go = GameObject.Instantiate(torch_1, seam.pointList[0].pos, Quaternion.identity);
                 // Vector3 rot = AnglesFromFrame(seam.frameList[0]);
-                // go.transform.eulerAngles = rot;
+                // go.transform.localEulerAngles = rot;
                 Vector3 pos =seam.frameList[i].pos;
                 pos.x = -pos.x;
                 GameObject go;
@@ -84,8 +85,8 @@ public class xmlLoader : MonoBehaviour
                     go = GameObject.Instantiate(torch_2, pos, QuaternionFromFrame(seam.frameList[i]));
                 }
                 // go.transform.position = seam.frameList[0].pos;
-                // float z = go.transform.eulerAngles.z <=180 ? go.transform.eulerAngles.z : (go.transform.eulerAngles.z-360)%360;
-                go.transform.eulerAngles = new Vector3 (go.transform.eulerAngles.x, -go.transform.eulerAngles.y, go.transform.eulerAngles.z);
+                // float z = go.transform.localEulerAngles.z <=180 ? go.transform.localEulerAngles.z : (go.transform.localEulerAngles.z-360)%360;
+                go.transform.localEulerAngles = new Vector3 (go.transform.localEulerAngles.x, -go.transform.localEulerAngles.y, go.transform.localEulerAngles.z);
                 // Debug.Log(seam.frameList[i].pos);
                 if (root != null)
                 {
@@ -94,7 +95,7 @@ public class xmlLoader : MonoBehaviour
             }
         }
         root.transform.localScale = Vector3.one * 0.006f;
-        root.transform.eulerAngles = new Vector3(-90f,0,0);
+        root.transform.localEulerAngles = new Vector3(-90f,0,0);
     }
 
     // LEGACY
@@ -136,13 +137,12 @@ public class xmlLoader : MonoBehaviour
 
     void instanciateScene(string instanceName)
     {
+        // instantiate obstacle mesh
         obstacleMesh = load_mesh("MeshInputData/"+instanceName, instanceName);
-        obstacleMesh.transform.SetParent(root.transform);
-        
+        obstacleMesh.transform.SetParent(root.transform);        
         List<GameObject> points = new List<GameObject>();
         envPoints = new List<seamEnv>();
-        // instantiate obstacle mesh
-        load_mesh(obstacleMesh, instanceName)
+
         // read all positions and add to scene
         foreach (var seam in xdoc.seamList)
         {
@@ -150,7 +150,7 @@ public class xmlLoader : MonoBehaviour
             {
                 // GameObject go = GameObject.Instantiate(torch_1, seam.pointList[0].pos, Quaternion.identity);
                 // Vector3 rot = AnglesFromFrame(seam.frameList[0]);
-                // go.transform.eulerAngles = rot;
+                // go.transform.localEulerAngles = rot;
                 Vector3 pos =seam.frameList[i].pos;
                 pos.x = -pos.x;
                 GameObject go;
@@ -165,20 +165,21 @@ public class xmlLoader : MonoBehaviour
                     go = GameObject.Instantiate(torch_2, pos, QuaternionFromFrame(seam.frameList[i]));
                 }
                 // go.transform.position = seam.frameList[0].pos;
-                // float z = go.transform.eulerAngles.z <=180 ? go.transform.eulerAngles.z : (go.transform.eulerAngles.z-360)%360;
-                go.transform.eulerAngles = new Vector3 (go.transform.eulerAngles.x, -go.transform.eulerAngles.y, go.transform.eulerAngles.z);
+                // float z = go.transform.localEulerAngles.z <=180 ? go.transform.localEulerAngles.z : (go.transform.localEulerAngles.z-360)%360;
+                go.transform.localEulerAngles = new Vector3 (go.transform.localEulerAngles.x, -go.transform.localEulerAngles.y, go.transform.localEulerAngles.z);
                 // Debug.Log(seam.frameList[i].pos);
                 if (root != null)
                 {
                     go.transform.SetParent(root.transform);
                 }
-                envPoints.Add(new seamEnv(seam.pointList[i]))
+                envPoints.Add(new seamEnv(seam.pointList[i]));
                 points.Add(go);
+                go.SetActive(false);
             }
         }
         // transform scene to easier to use scale and rotation
         root.transform.localScale = Vector3.one * 0.006f;
-        root.transform.eulerAngles = new Vector3(-90f,0,0);
+        // root.transform.localEulerAngles = new Vector3(-90f,0,0);
         // get points after transformation
         for (int i = 0; i < envPoints.Count; i++)
         {
@@ -194,57 +195,70 @@ public class xmlLoader : MonoBehaviour
 
     public seamEnv getNewPoint()
     {
-        if (currentSeam < xdoc.seamList.Count)
+        if (currentPoint==0)
         {
-            seamClass seam = xdoc.seamList[currentSeam];
-            // more seams available
-            if (currentPoint < seam.pointList.Count)
-            {
-                // more points available
-                seamEnv pointEnv = new seamEnv(seam.pointList[currentPoint]);
-                currentPoint++;
-                return pointEnv;
-            }
-            else
-            {
-                // no more points available get new seam
-                currentSeam++;
-                currentPoint = 0;
-                return getNewPoint();
-            }
+            currentPoint =60;
+        }
+        if (currentPoint < envPoints.Count)
+        {
+            seamEnv point = envPoints[currentPoint];
+            currentPoint++;
+            return point;
+        }
+        else if(currentDoc < instanceNames.Length)
+        {
+            getNewDoc(instanceNames[currentDoc]);
+            instanciateScene(instanceNames[currentDoc]);
+            currentDoc++;
+            currentPoint =0;
+            return getNewPoint();
         }
         else
         {
-            // no more seams available get new doc
-            if (getNewDoc())
-            {
-                // new doc found
-                return getNewPoint();
-            }
-            else
-            {
-                // no new doc found
-                return null;
-            }
+            return null;
         }
+        // if (currentSeam < xdoc.seamList.Count)
+        // {
+        //     seamClass seam = xdoc.seamList[currentSeam];
+        //     // more seams available
+        //     if (currentPoint < seam.pointList.Count)
+        //     {
+        //         // more points available
+        //         seamEnv pointEnv = new seamEnv(seam.pointList[currentPoint]);
+        //         currentPoint++;
+        //         return pointEnv;
+        //     }
+        //     else
+        //     {
+        //         // no more points available get new seam
+        //         currentSeam++;
+        //         currentPoint = 0;
+        //         return getNewPoint();
+        //     }
+        // }
+        // else
+        // {
+        //     // no more seams available get new doc
+        //     if (getNewDoc())
+        //     {
+        //         // new doc found
+        //         return getNewPoint();
+        //     }
+        //     else
+        //     {
+        //         // no new doc found
+        //         return null;
+        //     }
+        // }
     }
 
-    public bool getNewDoc()
+    public void getNewDoc(string instanceName)
     {
-        if (currentDoc < instanceNames.Length)
-        {
-            // still a new doc available
-            string path = "xmlData/" + instanceNames[currentDoc];
-            // remove ending before reading
-            // Debug.Log(path);
-            xdoc = new xmlDoc(path);
-            currentDoc++;
-            currentSeam = 0;
-            currentPoint = 0;
-            return true;
-        }
-        // no new doc available
-        return false;
+        // still a new doc available
+        string path = "xmlData/" + instanceName;
+        // remove ending before reading
+        // Debug.Log(path);
+        xdoc = new xmlDoc(path);
     }
 
     // from https://answers.unity.com/questions/11363/converting-matrix4x4-to-quaternion-vector3.html

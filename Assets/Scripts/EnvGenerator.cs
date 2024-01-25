@@ -64,7 +64,7 @@ public class EnvGenerator : MonoBehaviour
         cube.tag = "obstacle";
         cube.transform.SetParent(this.transform);
         cube.transform.localPosition = position + new Vector3(-scale[0]/2, -scale[1]/2, scale[2]/2);
-        cube.transform.eulerAngles = rotation;
+        cube.transform.localEulerAngles = rotation;
         cube.transform.localScale = scale;
         return cube;
     }
@@ -76,7 +76,7 @@ public class EnvGenerator : MonoBehaviour
         cube.name = name;
         cube.transform.SetParent(this.transform);
         cube.transform.localPosition = position;
-        cube.transform.eulerAngles = rotation;
+        cube.transform.localEulerAngles = rotation;
         cube.transform.localScale = scale;
         return cube;
     }
@@ -87,7 +87,7 @@ public class EnvGenerator : MonoBehaviour
         foreach (var obj in listOfObstacles)
         {
             obj.transform.localPosition = obstacleEmptySpace;
-            obj.transform.eulerAngles = Vector3.zero;
+            obj.transform.localEulerAngles = Vector3.zero;
             obj.transform.localScale = obstacleDefaultSize;
         }
     }
@@ -106,10 +106,10 @@ public class EnvGenerator : MonoBehaviour
     {
         // set environment given parameters
         base1.transform.localPosition = envParams.base1Position;
-        base1.transform.eulerAngles = envParams.base1Rotation;
+        base1.transform.localEulerAngles = envParams.base1Rotation;
         base1.transform.localScale = envParams.base1Scale;
         base2.transform.localPosition = envParams.base2Position;
-        base2.transform.eulerAngles = envParams.base2Rotation;
+        base2.transform.localEulerAngles = envParams.base2Rotation;
         base2.transform.localScale = envParams.base2Scale;
         target.transform.localPosition = envParams.targetPosition;
         // reset obstacles to ensure that the area is clear
@@ -125,7 +125,7 @@ public class EnvGenerator : MonoBehaviour
             GameObject obstacle = this.listOfObstacles[i];
             ObstacleParameters obsParam = envParams.listOfObstacles[i];
             obstacle.transform.localPosition = obsParam.position;
-            obstacle.transform.eulerAngles = obsParam.rotation;
+            obstacle.transform.localEulerAngles = obsParam.rotation;
             obstacle.transform.localScale = obsParam.scale;
         }
     }
@@ -133,10 +133,10 @@ public class EnvGenerator : MonoBehaviour
     public ProblemParameters generateEnv(ProblemParameters envParams)
     {
         envParams.base1Position = base1.transform.localPosition;
-        envParams.base1Rotation = base1.transform.eulerAngles;
+        envParams.base1Rotation = base1.transform.localEulerAngles;
         envParams.base1Scale = base1.transform.localScale;
         envParams.base2Position = base2.transform.localPosition;
-        envParams.base2Rotation = base2.transform.eulerAngles;
+        envParams.base2Rotation = base2.transform.localEulerAngles;
         envParams.base2Scale = base2.transform.localScale;
         envParams.targetPosition = target.transform.localPosition;
         envParams.listOfObstacles = generateObstacleList();
@@ -155,8 +155,8 @@ public class EnvGenerator : MonoBehaviour
     {
         Vector3 angleVector = (inNormal1.normalized + inNormal2.normalized).normalized;
         // this.transform.LookAt(angleVector);
-        // this.transform.eulerAngles = this.transform.eulerAngles + new Vector3(45f,0f,0f);
-        // this.transform.eulerAngles = new Vector3(45f,0f,0f);
+        // this.transform.localEulerAngles = this.transform.localEulerAngles + new Vector3(45f,0f,0f);
+        // this.transform.localEulerAngles = new Vector3(45f,0f,0f);
         base1.transform.localPosition = new Vector3(UnityEngine.Random.Range(-5f,5f), -0.05f, 0.5f);
         base2.transform.localPosition = new Vector3(UnityEngine.Random.Range(-5f,5f), 0.5f, -0.05f);
         resetObstacles();
@@ -170,7 +170,7 @@ public class EnvGenerator : MonoBehaviour
         {
             // add vertical Obstacle
             listOfObstacles[0].transform.localPosition = new Vector3(UnityEngine.Random.Range(-7f,-3f), UnityEngine.Random.Range(1f,1.5f), UnityEngine.Random.Range(-1f,1f));
-            listOfObstacles[0].transform.eulerAngles = new Vector3(0f, 0f, 0f);
+            listOfObstacles[0].transform.localEulerAngles = new Vector3(0f, 0f, 0f);
             listOfObstacles[0].transform.localScale = new Vector3(10f, 0.1f, 1f);
         }
 
@@ -178,7 +178,7 @@ public class EnvGenerator : MonoBehaviour
         {
             // add horizontal Obstacle
             listOfObstacles[1].transform.localPosition = new Vector3(UnityEngine.Random.Range(-7f,-3f), UnityEngine.Random.Range(-1f,1f), UnityEngine.Random.Range(1f,1.5f));
-            listOfObstacles[1].transform.eulerAngles = new Vector3(0f, 0f, 0f);
+            listOfObstacles[1].transform.localEulerAngles = new Vector3(0f, 0f, 0f);
             listOfObstacles[1].transform.localScale = new Vector3(10f, 1f, 0.1f);
         }        
 
@@ -191,7 +191,7 @@ public class EnvGenerator : MonoBehaviour
         {
             // add left side Obstacle
             listOfObstacles[2].transform.localPosition = new Vector3(UnityEngine.Random.Range(0.1f,0.5f), UnityEngine.Random.Range(0.25f,0.5f), UnityEngine.Random.Range(-5f,-2f));
-            listOfObstacles[2].transform.eulerAngles = new Vector3(0f, 0f, 0f);
+            listOfObstacles[2].transform.localEulerAngles = new Vector3(0f, 0f, 0f);
             listOfObstacles[2].transform.localScale = new Vector3(0.1f, 1f, 10f);
         }
 
@@ -199,7 +199,7 @@ public class EnvGenerator : MonoBehaviour
         {
             // add right side Obstacle
             listOfObstacles[3].transform.localPosition = new Vector3(UnityEngine.Random.Range(-0.1f,-0.5f), UnityEngine.Random.Range(0.25f,0.5f), UnityEngine.Random.Range(-5f,-2f));
-            listOfObstacles[3].transform.eulerAngles = new Vector3(0f, 0f, 0f);
+            listOfObstacles[3].transform.localEulerAngles = new Vector3(0f, 0f, 0f);
             listOfObstacles[3].transform.localScale = new Vector3(0.1f, 1f, 10f);
         }    
     }

@@ -86,7 +86,7 @@ public class PoseEstimationLidarAgent : Agent
         target = envGenerator.target;
 
         startPosition = this.gameObject.transform.position;
-        startRotation = this.gameObject.transform.eulerAngles;
+        startRotation = this.gameObject.transform.localEulerAngles;
 
         body = gameObject.GetComponent<Rigidbody>();
         baseControl = gameObject.GetComponent<BaseControl>();
@@ -181,7 +181,7 @@ public class PoseEstimationLidarAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        Vector3 normalizedAngles = this.transform.eulerAngles * 1/360;
+        Vector3 normalizedAngles = this.transform.localEulerAngles * 1/360;
         sensor.AddObservation(normalizedAngles);
         sensor.AddObservation(this.collisionState);
         calculateReward();
@@ -283,9 +283,9 @@ public class PoseEstimationLidarAgent : Agent
         // angleVector = (normal1 + normal2).normalized;
         this.transform.localPosition = spot;
         // this.transform.LookAt((normal1 + normal2));
-        // angleVector = this.transform.eulerAngles;
+        // angleVector = this.transform.localEulerAngles;
         angleVector = new Vector3(-45f,0f,0f);
-        this.transform.eulerAngles = angleVector;
+        this.transform.localEulerAngles = angleVector;
     }
 
 
@@ -293,7 +293,7 @@ public class PoseEstimationLidarAgent : Agent
     public void readSolution(string inputFilename)
     {
         // Debug.Log($"current pos : {this.transform.localPosition}");
-        // Debug.Log($"current rot : {this.transform.eulerAngles}");
+        // Debug.Log($"current rot : {this.transform.localEulerAngles}");
         if (File.Exists(inputFilename))
         {
             // Read the entire contents of the file as a string
@@ -304,7 +304,7 @@ public class PoseEstimationLidarAgent : Agent
             // Debug.Log($"env pos : {this.currentEnv.startPosition}");
             this.envGenerator.setEnv(this.currentEnv);
             this.transform.localPosition = this.currentEnv.startPosition;
-            this.transform.eulerAngles = this.currentEnv.startRotation;
+            this.transform.localEulerAngles = this.currentEnv.startRotation;
             this.target.transform.localPosition = this.currentEnv.targetPosition;
         }
         else
@@ -380,7 +380,7 @@ public class PoseEstimationLidarAgent : Agent
         {
             currentReward = 10f;
         }
-        Vector3 angles = rotationToHalf(this.transform.eulerAngles);
+        Vector3 angles = rotationToHalf(this.transform.localEulerAngles);
         // Debug.Log(angles);
         if ((angles.x<=-90) || (angles.x>=0) || (angles.y>=90) || (angles.y<=-90))
         {
@@ -392,7 +392,7 @@ public class PoseEstimationLidarAgent : Agent
             currentReward -=15f;
         }
         // punish for bad angle
-        // float badAngle = (this.angleVector - this.transform.eulerAngles).magnitude / 3600;
+        // float badAngle = (this.angleVector - this.transform.localEulerAngles).magnitude / 3600;
         // Debug.Log($"bad angle {badAngle}");
         // currentReward -= badAngle;
     }

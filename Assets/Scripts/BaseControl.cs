@@ -21,17 +21,17 @@ public class BaseControl : MonoBehaviour
         actionArray = actionArray.Select( x => x != 2 ? x : -1).ToArray(); 
         // Debug.Log(string.Join(" ", actionArray));
         Vector3 translationForce =TRANSLATION_FACTOR * (
-                                    (actionArray[0])* this.gameObject.transform.forward +
-                                    (actionArray[1]) * this.gameObject.transform.up +
-                                    (actionArray[2]) * this.gameObject.transform.right);
+                                    (actionArray[0])* this.transform.forward +
+                                    (actionArray[1]) * this.transform.up +
+                                    (actionArray[2]) * this.transform.right);
         Vector3 rotationAngles = new Vector3((actionArray[3]), 
                                             (actionArray[4]), 
                                             (actionArray[5]))* ROTATION_FACTOR;
 
-        this.gameObject.transform.position += translationForce;
-        rotationAngles += this.gameObject.transform.eulerAngles;
+        this.transform.position += translationForce;
+        rotationAngles += this.transform.localEulerAngles;
         rotationAngles.z = 0f;
-        this.gameObject.transform.eulerAngles = rotationAngles;
+        this.transform.localEulerAngles = rotationAngles;
         // legacy
         // body.AddForce(translation_force,ForceMode.VelocityChange);
         // gameObject.transform.Rotate(rotation_force[0],rotation_force[1],rotation_force[2], Space.Self);

@@ -31,7 +31,7 @@ public class ToolCreation : MonoBehaviour
             target = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             target.transform.SetParent(this.transform);
             target.transform.localPosition = Vector3.zero;
-            target.transform.eulerAngles = Vector3.zero;
+            target.transform.localEulerAngles = Vector3.zero;
             target.transform.localScale =  new Vector3(0.3f, 0.3f, 0.3f);
             target.name = "target";
             target.tag = "target";
@@ -49,7 +49,7 @@ public class ToolCreation : MonoBehaviour
         }
         tool.transform.localPosition = new Vector3(0f,0.2f,0f);
         tool.transform.localScale = new Vector3(0.006f, 0.006f, 0.006f);
-        tool.transform.eulerAngles =rotAngle;
+        tool.transform.localEulerAngles =rotAngle;
         StartCoroutine(frameAfterStart());
     }
 
@@ -71,7 +71,7 @@ public class ToolCreation : MonoBehaviour
     IEnumerator afterLidar()
     {
         yield return new WaitForSeconds(1);
-        // tool.transform.eulerAngles = new Vector3(0f,0f,180f);
+        // tool.transform.localEulerAngles = new Vector3(0f,0f,180f);
         // tool.transform.localPosition = new Vector3(0f,0f,0.2f);
         foreach (Transform child in agent.transform) 
         {

@@ -114,7 +114,7 @@ public class ObstacleParameters
     public ObstacleParameters(GameObject obj)
     {
         this.position = obj.transform.localPosition;
-        this.rotation = obj.transform.eulerAngles;
+        this.rotation = obj.transform.localEulerAngles;
         this.scale = obj.transform.localScale;
     }
 }
@@ -329,7 +329,7 @@ public class Legacy_BaseTrainer : MonoBehaviour
         }
         // simulate steps taken
         // this.transform.localPosition = currentEnv.startPosition;
-        // this.transform.eulerAngles = currentEnv.startRotation;
+        // this.transform.localEulerAngles = currentEnv.startRotation;
         collisionDetected = false;
         targetReached = false;
         // runSteps(this.currentSolutionSteps);
@@ -514,7 +514,7 @@ public class Legacy_BaseTrainer : MonoBehaviour
                         actionArray[2] = 0;
                     }
                     // // convert angle to 180 to -180
-                    currentAngle = rotationToHalf(this.transform.eulerAngles);
+                    currentAngle = rotationToHalf(this.transform.localEulerAngles);
                     currentAngleDiff= (targetRotation-currentAngle).magnitude;
                     // Debug.Log($"This is target rot {targetRotation}, current rot {currentAngle}, this is magn: {currentAngleDiff}");
                 // Debug.Log($"This is target rot {targetRotation}, current rot {currentAngle}, this is magn: {currentAngleDiff}");
@@ -573,7 +573,7 @@ public class Legacy_BaseTrainer : MonoBehaviour
         this.targetPosition = startPosition;
         this.targetRotation = startRotation;
         this.transform.localPosition = startPosition;
-        this.transform.eulerAngles = startRotation;
+        this.transform.localEulerAngles = startRotation;
         // reset tempSteps
         tempSteps.Clear();
         // // start movement
@@ -585,7 +585,7 @@ public class Legacy_BaseTrainer : MonoBehaviour
     {
         // set new pos and rot
         startPosition = this.transform.localPosition;
-        startRotation = rotationToHalf(this.transform.eulerAngles);
+        startRotation = rotationToHalf(this.transform.localEulerAngles);
         // add new steps to solution
         // Debug.Log($"num of steps added {tempSteps.Count}");
         this.currentSolutionSteps.AddRange(tempSteps);
@@ -626,9 +626,9 @@ public class Legacy_BaseTrainer : MonoBehaviour
         // Debug.Log(targetObject.transform.position);
         this.transform.localPosition = targetObject.transform.localPosition+new Vector3(0,0.1f,0.1f);
         this.transform.localPosition = targetObject.transform.localPosition+new Vector3(0,0.1f,0.1f);
-        this.transform.eulerAngles = new Vector3(-45f,0,0);
+        this.transform.localEulerAngles = new Vector3(-45f,0,0);
         startPosition = this.transform.localPosition;
-        startRotation = rotationToHalf(this.transform.eulerAngles);
+        startRotation = rotationToHalf(this.transform.localEulerAngles);
         this.targetPosition = startPosition;
         this.targetRotation = startRotation;
         currentEnv = new ProblemParameters();
@@ -667,7 +667,7 @@ public class Legacy_BaseTrainer : MonoBehaviour
     public void readSolution(string inputFilename)
     {
         Debug.Log($"current pos : {this.transform.localPosition}");
-        Debug.Log($"current rot : {this.transform.eulerAngles}");
+        Debug.Log($"current rot : {this.transform.localEulerAngles}");
         if (File.Exists(inputFilename))
         {
             // Read the entire contents of the file as a string
@@ -692,9 +692,9 @@ public class Legacy_BaseTrainer : MonoBehaviour
     {
         envGenerator.setEnv(env);
         this.transform.localPosition = env.startPosition;
-        this.transform.eulerAngles = env.startRotation;
+        this.transform.localEulerAngles = env.startRotation;
         Debug.Log($"current pos : {this.transform.localPosition}");
-        Debug.Log($"current rot : {this.transform.eulerAngles}");
+        Debug.Log($"current rot : {this.transform.localEulerAngles}");
         List<int[]> reverseSteps = new List<int[]>();
         for (int i=0; i < env.solutionSteps.Count ; i++)
         {
@@ -770,7 +770,7 @@ public class Legacy_BaseTrainer : MonoBehaviour
         // initSolution();
         // new steps to be added if pos is found
         // startPosition = this.transform.localPosition;
-        // startRotation = this.transform.eulerAngles;
+        // startRotation = this.transform.localEulerAngles;
         
         // generate new angle to move to
         targetRotation.x = (Random.Range(rangeRotation1[0],rangeRotation2[0]));
@@ -778,8 +778,8 @@ public class Legacy_BaseTrainer : MonoBehaviour
         targetRotation.z = (Random.Range(rangeRotation1[2],rangeRotation2[2]));
 
         // Debug.Log($"This is target angle {targetRotation}");
-        // Debug.Log($"This is euler angle {this.transform.eulerAngles}");
-        // Debug.Log($"This is dist {this.transform.eulerAngles-targetRotation}");
+        // Debug.Log($"This is euler angle {this.transform.localEulerAngles}");
+        // Debug.Log($"This is dist {this.transform.localEulerAngles-targetRotation}");
     }
 
     IEnumerator takeStep()

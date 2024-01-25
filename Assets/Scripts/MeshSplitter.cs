@@ -31,7 +31,7 @@ public class MeshSplitter : MonoBehaviour
             // Create a new mesh for the decomposed parts
             GameObject rootObj = SplitMesh(originalMesh);
             rootObj.transform.localPosition = new Vector3(36.77f, -0.1f, 43.5f);
-            rootObj.transform.eulerAngles = new Vector3(-90f,0f,0f);
+            rootObj.transform.localEulerAngles = new Vector3(-90f,0f,0f);
             rootObj.transform.localScale = Vector3.one * 0.01f;
             // // Do something with the decomposed meshes, for example, create new GameObjects
             // for (int i = 0; i < decomposedMeshes.Length; i++)

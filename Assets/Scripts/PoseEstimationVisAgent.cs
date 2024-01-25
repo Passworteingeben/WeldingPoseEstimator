@@ -51,7 +51,7 @@ public class PoseEstimationVisAgent : Agent
 
     private int steps = 0;
 
-    int minSteps = 0;
+    int minSteps = 50;
     public bool collisionState = false;
 
     // private List<CollisionCheck> colliders = new List<CollisionCheck>();
@@ -62,10 +62,12 @@ public class PoseEstimationVisAgent : Agent
     public Material collisionMaterial;
     public Material defaultMaterial;
 
+    private Transform parent;
     private bool showColor = true;
 
     public override void Initialize()
     {
+        parent = this.transform.parent;
         addMaterials();
         registerColliders();
         if (GetComponent<BehaviorParameters>().BehaviorType == BehaviorType.InferenceOnly)
@@ -78,7 +80,7 @@ public class PoseEstimationVisAgent : Agent
         target = envGenerator.target;
 
         startPosition = this.gameObject.transform.position;
-        startRotation = this.gameObject.transform.eulerAngles;
+        startRotation = this.gameObject.transform.localEulerAngles;
 
         baseControl = gameObject.GetComponent<BaseControl>();
     }
@@ -87,12 +89,17 @@ public class PoseEstimationVisAgent : Agent
     {
         // Debug.Log("Episode begin");
         steps = 0;
-        setAgent(new Vector3(0f,1f,0f), new Vector3(0f,0f,1f), target.transform.localPosition);
         // envGenerator.getNewEnv(new Vector3(0f,1f,0f), new Vector3(0f,0f,1f), target.transform.localPosition);
-
-        seamEnv envPara = xmlloader.getNewPoint();
-        this.gameObject.transform.localPosition = envPara.pos;
-        this.gameObject.transform.rotation = Quaternion.LookRotation(envPara.normal1, envPara.normal2);
+        // seamEnv envPara = xmlloader.getNewPoint();
+        seamEnv envPara = null;
+        if (envPara != null)
+        {
+            setAgent(envPara.normal1, envPara.normal2, envPara.pos);
+        }
+        else
+        {
+            setAgent(new Vector3(0f,1f,0f), new Vector3(0f,0f,1f), target.transform.localPosition);
+        }
 
         collisionState = CollisionCheck();
         Debug.Log($"Episode begin {this.angleVector}");
@@ -100,21 +107,45 @@ public class PoseEstimationVisAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        Vector3 normalizedAngles = this.transform.eulerAngles * 1/360;
+        Vector3 normalizedAngles = this.transform.localEulerAngles * 1/360;
         sensor.AddObservation(normalizedAngles);
         sensor.AddObservation(this.collisionState);
     }
 
     public void setAgent(Vector3 inNormal1, Vector3 inNormal2, Vector3 spot)
     {
+        Debug.Log($"forw z {this.transform.forward}");
+        Debug.Log($"up y {this.transform.up}");
+        Debug.Log($"right x {this.transform.right}");
+        Debug.Log(this.transform.localEulerAngles);
+        // // inNormal1 = new Vector3(inNormal1.x, inNormal1.z, inNormal1.y);
+        // // inNormal2 = new Vector3(inNormal2.x, inNormal2.z, inNormal2.y);
+        inNormal1 = new Vector3(1.0f,0.0f,0.0f);
+        // inNormal1 = new Vector3(0.0f,1.0f,0.0f);
+        // inNormal1 = new Vector3(0.0f,0.0f,1.0f);
+        inNormal2 = new Vector3(0.0f,0.0f,1.0f);
+        // inNormal2 = new Vector3(0.0f,1.0f,0.0f);
         this.normal1 = inNormal1.normalized;
         this.normal2 = inNormal2.normalized;
+        Debug.Log($"n1 {normal1}");
+        Debug.Log($"n2 {normal2}");
+        Quaternion rot = new Quaternion();
+        rot.SetLookRotation(normal1, normal2);
+
+        parent.rotation = rot;
+        // this.gameObject.transform.rotation = Quaternion.LookRotation(normal1, normal2);
+        Debug.Log($"forw z {this.transform.forward}");
+        Debug.Log($"up y {this.transform.up}");
+        Debug.Log($"right x {this.transform.right}");
+        Debug.Log(this.transform.localEulerAngles);
         // angleVector = (normal1 + normal2).normalized;
-        this.transform.localPosition = spot;
+        parent.localPosition = spot;
+        // this.transform.localPosition = spot;
         // this.transform.LookAt((normal1 + normal2));
-        // angleVector = this.transform.eulerAngles;
-        angleVector = new Vector3(-45f,0f,0f);
-        this.transform.eulerAngles = angleVector;
+        // angleVector = this.transform.localEulerAngles;
+        // angleVector = new Vector3(-45f,0f,0f);
+        // this.transform.localEulerAngles += angleVector;
+        this.transform.localEulerAngles = new Vector3(-45f,0f,0f);
     }
 
     bool ray_is_hit(RaycastHit hit)
@@ -124,6 +155,7 @@ public class PoseEstimationVisAgent : Agent
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
+        Debug.Log(steps);
         collisionState = CollisionCheck();
         // Debug.Log(CollisionCheck());
         calculateReward();
@@ -169,7 +201,7 @@ public class PoseEstimationVisAgent : Agent
         {
             currentReward = 1f;
         }
-        Vector3 currentAngle = rotationToHalf(this.transform.eulerAngles);
+        Vector3 currentAngle = rotationToHalf(this.transform.localEulerAngles);
         // // Debug.Log(angles);
         // if ((angles.x<=-90) || (angles.x>=0) || (angles.y>=90) || (angles.y<=-90))
         // {
