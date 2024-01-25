@@ -48,6 +48,8 @@ public class xmlLoader : MonoBehaviour
 
     public List<seamEnv> envPoints = new List<seamEnv>();
 
+    public MeshSplitter ms;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -58,6 +60,11 @@ public class xmlLoader : MonoBehaviour
         // getNewDoc(instanceNames[0]);
         // instanciateScene(instanceNames[0]);
         // loadFull(path);
+
+        if (ms==null)
+        {
+            this.gameObject.GetComponent<MeshSplitter>();
+        }
     }
 
     public void loadFull(string path)
@@ -138,9 +145,21 @@ public class xmlLoader : MonoBehaviour
 
     void instanciateScene(string instanceName)
     {
+        // destroy old one if available
+        if (root.transform.childCount > 0)
+        {
+            foreach (Transform child in root.transform) 
+            {
+                Destroy(child.gameObject);
+            }
+        }
         // instantiate obstacle mesh
         obstacleMesh = load_mesh("MeshInputData/"+instanceName, instanceName);
-        obstacleMesh.transform.SetParent(root.transform);        
+        obstacleMesh.transform.SetParent(root.transform);
+        GameObject decomposedMesh = ms.SplitMesh(obstacleMesh);
+        obstacleMesh.SetActive(false);
+        decomposedMesh.transform.SetParent(root.transform);
+
         List<GameObject> points = new List<GameObject>();
         envPoints = new List<seamEnv>();
 
@@ -219,6 +238,8 @@ public class xmlLoader : MonoBehaviour
             instanciateScene(instanceNames[currentDoc]);
             currentDoc++;
             currentPoint =0;
+            //TODO just for now
+            return null;
             return getNewPoint();
         }
         else

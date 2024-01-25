@@ -21,30 +21,36 @@ public class MeshSplitter : MonoBehaviour
             mats.Add(Resources.Load("Materials/" + matName, typeof(Material)) as Material);
         }
 
-        // Assuming the MeshFilter component is attached to the GameObject
-        MeshFilter meshFilter = meshObj.GetComponent<MeshFilter>();
+        // // Assuming the MeshFilter component is attached to the GameObject
+        // MeshFilter meshFilter = meshObj.GetComponent<MeshFilter>();
 
-        if (meshFilter != null)
-        {
-            Mesh originalMesh = meshFilter.mesh;
+        // if (meshFilter != null)
+        // {
+        //     Mesh originalMesh = meshFilter.mesh;
 
-            // Create a new mesh for the decomposed parts
-            GameObject rootObj = SplitMesh(originalMesh);
-            rootObj.transform.localPosition = new Vector3(36.77f, -0.1f, 43.5f);
-            rootObj.transform.localEulerAngles = new Vector3(-90f,0f,0f);
-            rootObj.transform.localScale = Vector3.one * 0.01f;
-            // // Do something with the decomposed meshes, for example, create new GameObjects
-            // for (int i = 0; i < decomposedMeshes.Length; i++)
-            // {
-            //     GameObject newObject = new GameObject($"DecomposedPart_{i}");
-            //     newObject.AddComponent<MeshFilter>().mesh = decomposedMeshes[i];
-            //     newObject.AddComponent<MeshRenderer>();
-            //     // You may want to set materials, shaders, etc., on the MeshRenderer
-            // }
-        }
+        //     // Create a new mesh for the decomposed parts
+        //     GameObject rootObj = SplitMesh(originalMesh);
+        //     rootObj.transform.localPosition = new Vector3(36.77f, -0.1f, 43.5f);
+        //     rootObj.transform.localEulerAngles = new Vector3(-90f,0f,0f);
+        //     rootObj.transform.localScale = Vector3.one * 0.01f;
+        //     // // Do something with the decomposed meshes, for example, create new GameObjects
+        //     // for (int i = 0; i < decomposedMeshes.Length; i++)
+        //     // {
+        //     //     GameObject newObject = new GameObject($"DecomposedPart_{i}");
+        //     //     newObject.AddComponent<MeshFilter>().mesh = decomposedMeshes[i];
+        //     //     newObject.AddComponent<MeshRenderer>();
+        //     //     // You may want to set materials, shaders, etc., on the MeshRenderer
+        //     // }
+        // }
     }
 
-    GameObject SplitMesh(Mesh originalMesh)
+    public GameObject SplitMesh(GameObject go)
+    {
+        MeshFilter meshFilter = meshObj.GetComponentsInChildren<MeshFilter>()[0];
+        return SplitMesh(meshFilter.mesh);
+    }
+
+    public GameObject SplitMesh(Mesh originalMesh)
     {
         GameObject root = new GameObject("MeshDecomp");
         Vector3[] vertices = originalMesh.vertices;
