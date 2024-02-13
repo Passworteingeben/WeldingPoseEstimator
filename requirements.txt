@@ -1,0 +1,8 @@
+# mlagents==0.28.0
+# mlagents-envs==0.28.0
+numpy==1.21.6
+Pillow==9.5.0
+six==1.16.0
+torch==1.13.1
+torchaudio==0.13.1
+torchvision==0.14.1
