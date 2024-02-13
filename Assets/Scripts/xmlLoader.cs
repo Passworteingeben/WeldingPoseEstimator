@@ -49,7 +49,7 @@ public class xmlLoader : MonoBehaviour
 
     private string pathToXmls = "Assets/Resources/xmlData";
     private string[] instanceNames;
-    public string path = "xmlData/201910204483_R1.xml";
+    // public string path = "xmlData/201910204483_R1.xml";
     // public string path = "xmlData/202110184743_R3.xml";
 
     // public GameObject root;
@@ -65,6 +65,7 @@ public class xmlLoader : MonoBehaviour
     public MeshSplitter ms;
 
     int envCount = 0;
+    [HideInInspector]
     public int instMax;
 
     // Start is called before the first frame update
@@ -73,7 +74,7 @@ public class xmlLoader : MonoBehaviour
         // load_mesh(torch_1, PATH_TORCH_1);
         // load_mesh(torch_2, PATH_TORCH_2);
         instanceNames = getInstances();
-        instMax = instanceNames.Length;
+        instMax = instanceNames.Length-1;
         // Debug.Log(instanceNames[0]);
         // getNewDoc(instanceNames[0]);
         // instanciateScene(instanceNames[0]);

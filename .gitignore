@@ -9,7 +9,6 @@ UserSettings
 *.sln
 results
 Assets/Solutions
-*.meta
 *timers.json
 Assets/Resources/MeshInputData
 Assets/Resources/xmlData
