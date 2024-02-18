@@ -45,9 +45,12 @@ public class xmlLoader : MonoBehaviour
     public GameObject torch_2;
     public string PATH_TORCH_1 = "ToolData/MRW510_10GH";
     public string PATH_TORCH_2 = "ToolData/TAND_GERAD_DD";
-    public Material material;
+    // public Material material;
 
-    private string pathToXmls = "Assets/Resources/xmlData";
+    private string pathToXmls = "xmlData";
+    private string pathToMeshes = "MeshInputData";
+    // private string pathToXmls = "TestData/xmlData";
+    // private string pathToMeshes = "TestData/MeshInputData";
     private string[] instanceNames;
     // public string path = "xmlData/201910204483_R1.xml";
     // public string path = "xmlData/202110184743_R3.xml";
@@ -79,11 +82,12 @@ public class xmlLoader : MonoBehaviour
         // getNewDoc(instanceNames[0]);
         // instanciateScene(instanceNames[0]);
         // loadFull("xmlData/" + instanceNames[0]);
-        // Debug.Log(instanceNames[12]);
-        // loadFull("xmlData/" + instanceNames[12]);
+        // Debug.Log(instanceNames[0]);
+        // loadFull("xmlData/" + instanceNames[0]);
 
         if (ms==null)
         {
+            // ms = this.gameObject.AddComponent<MeshSplitter>();
             ms = this.gameObject.GetComponent<MeshSplitter>();
         }
     }
@@ -119,6 +123,7 @@ public class xmlLoader : MonoBehaviour
     {
         if (docIndex >= instanceNames.Length)
         {
+            Debug.Log("all instances done");
             docIndex = instanceNames.Length-1;
         }
         Debug.Log("instantiate Scene");
@@ -137,7 +142,9 @@ public class xmlLoader : MonoBehaviour
         envRoot.transform.localEulerAngles = Vector3.zero;
         // Debug.Log(instanceNames[docIndex]);
         // instantiate obstacle mesh
-        GameObject obstacleMesh = load_mesh("MeshInputData/"+instanceNames[docIndex], instanceNames[docIndex]);
+        Debug.Log(instanceNames[docIndex]);
+        Debug.Log(pathToMeshes+"/"+instanceNames[docIndex]);
+        GameObject obstacleMesh = load_mesh(pathToMeshes+"/"+instanceNames[docIndex], instanceNames[docIndex]);
         // obstacleMesh.transform.SetParent(envRoot.transform);
         GameObject decomposedMesh = ms.SplitGameObject(obstacleMesh);
         Destroy(obstacleMesh);
@@ -210,7 +217,7 @@ public class xmlLoader : MonoBehaviour
     public string[] getInstances()
     {
         // get files from xml folder has endings in it
-        return Directory.GetFiles(pathToXmls, "*.xml").Select(filename =>Path.GetFileNameWithoutExtension(filename)).ToArray();
+        return Directory.GetFiles("Assets/Resources/"+ pathToXmls, "*.xml").Select(filename =>Path.GetFileNameWithoutExtension(filename)).ToArray();
     }
 
     public seamEnv getNewPoint(int toolType)
@@ -248,9 +255,10 @@ public class xmlLoader : MonoBehaviour
     public xmlDoc getNewDoc(int docIndex)
     {
         // still a new doc available
-        string path = "xmlData/" + instanceNames[docIndex];
+        // string path = "xmlData/" + instanceNames[docIndex];
+        string path = pathToXmls + "/" + instanceNames[docIndex];
         // remove ending before reading
-        // Debug.Log(path);
+        Debug.Log(path);
         return new xmlDoc(path);
     }
 
@@ -366,6 +374,7 @@ public class xmlLoader : MonoBehaviour
     {
         GameObject root = new GameObject("root");
 
+        Debug.Log(path);
         xdoc = new xmlDoc(path);
 
         foreach (var seam in xdoc.seamList)

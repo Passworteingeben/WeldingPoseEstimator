@@ -13,7 +13,6 @@ using static xmlLoader;
 public class PoseEstimationVisAgent : Agent
 {
     public xmlLoader xmlloader;
-    public GameObject toolGameObject;
     public ProblemParameters currentEnv;
 
     public BaseControl baseControl;
@@ -63,6 +62,8 @@ public class PoseEstimationVisAgent : Agent
 
     private envPara envParameters;
 
+    public int numOfParallelInstances = 4;
+
     public override void Initialize()
     {
         parent = this.transform.parent;
@@ -93,9 +94,16 @@ public class PoseEstimationVisAgent : Agent
         seamEnv seamPoint = null;
         if (envParameters == null)
         {
-            envParameters = xmlloader.instanciateScene(envRoot, UnityEngine.Random.Range(0,16));
-            // envParameters = xmlloader.instanciateScene(envRoot, docIndex);
+            // envParameters = xmlloader.instanciateScene(envRoot, UnityEngine.Random.Range(0,16));
             // docIndex = 0;
+            var id = this.parent.parent.gameObject.name.Split('_');
+            int.TryParse(id.Last(), out docIndex);
+            docIndex -=1;
+            if (docIndex < 0)
+            {
+                docIndex = 0;
+            }
+            envParameters = xmlloader.instanciateScene(envRoot, docIndex);
             pointIndex = 0;
         }
         bool correctTool = false;
@@ -109,9 +117,11 @@ public class PoseEstimationVisAgent : Agent
             else
             {
                 // get new doc and new point
-                envParameters = xmlloader.instanciateScene(envRoot, UnityEngine.Random.Range(0,xmlloader.instMax));
-                // docIndex+=1;
-                // envParameters = xmlloader.instanciateScene(envRoot, docIndex);
+                // envParameters = xmlloader.instanciateScene(envRoot, UnityEngine.Random.Range(0,xmlloader.instMax));
+                // docIndex+=1; 
+                Debug.Log("finished doc: " + docIndex.ToString());
+                docIndex += numOfParallelInstances;
+                envParameters = xmlloader.instanciateScene(envRoot, docIndex);
                 pointIndex = 0;
                 seamPoint = envParameters.envPoints[pointIndex];
             }
@@ -197,10 +207,6 @@ public class PoseEstimationVisAgent : Agent
             // if ((actionBuffers.DiscreteActions[2]==1))
             if ((actionBuffers.DiscreteActions[2]==1) && (collisionState ==false))
             {
-                if (currentReward < 0f)
-                {
-                    Debug.Log(currentReward);
-                }
                 // Debug.Log($"finished {currentReward}");
                 Debug.Log($"finished success");
                 // Debug.Log(currentReward);
@@ -208,11 +214,11 @@ public class PoseEstimationVisAgent : Agent
                 EndEpisode();
             }
         }
-        if ((steps > 401))
+        if ((steps >= 400))
         {
             Debug.Log("failed");
             // Debug.Log($"failed {currentReward}");
-            SetReward(currentReward);
+            // SetReward(currentReward);
             SetReward(-1f);
             EndEpisode();
         }

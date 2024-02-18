@@ -51,6 +51,7 @@ namespace Unity.MLAgents.Areas
             ComputeGridSize();
             // Sets the TrainingArea name to the name of the base area.
             m_TrainingAreaName = baseArea.name;
+
         }
 
         /// <summary>
@@ -106,7 +107,7 @@ namespace Unity.MLAgents.Areas
                         {
                             m_areaCount++;
                             var area = Instantiate(baseArea, new Vector3(x * separation, y * separation, z * separation), Quaternion.identity);
-                            area.name = m_TrainingAreaName;
+                            area.name = m_TrainingAreaName + "_" + m_areaCount.ToString();
                         }
                     }
                 }

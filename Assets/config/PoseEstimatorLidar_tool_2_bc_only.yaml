@@ -23,9 +23,9 @@ behaviors:
     #     gamma: 0.99
     behavioral_cloning:
       strength: 1.0 # 0.9
-      steps: 150000
+      steps: 15000000
       demo_path: Assets/Demonstrations/PoseEstimatorLidar_tool_2.demo
-    max_steps: 150000 # 1e7
+    max_steps: 15000000 # 1e7
     time_horizon: 64 # 64
     summary_freq: 10000
     keep_checkpoints: 5

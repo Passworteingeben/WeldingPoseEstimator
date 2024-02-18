@@ -14,7 +14,6 @@ using static xmlLoader;
 public class PoseEstimationLidarAgent : Agent
 {
     public xmlLoader xmlloader;
-    public GameObject toolGameObject;
     public ProblemParameters currentEnv;
 
     public BaseControl baseControl;
@@ -72,6 +71,7 @@ public class PoseEstimationLidarAgent : Agent
     private int pointIndex=0;
 
     private envPara envParameters;
+    public int numOfParallelInstances = 16;
 
     public override void Initialize()
     {
@@ -92,6 +92,18 @@ public class PoseEstimationLidarAgent : Agent
         startRotation = this.gameObject.transform.localEulerAngles;
 
         baseControl = gameObject.GetComponent<BaseControl>();
+        
+        foreach (Transform child in this.gameObject.transform.parent.parent)
+        {
+            if (child.name == "Env")
+            {
+                envRoot = child.gameObject;        
+            }
+        }
+        if (envRoot == null)
+        {
+            Debug.Log("env Root not assigned, assign it to Env");
+        }
 
         Transform tool_transform = null;
         foreach (Transform child in transform)
@@ -140,9 +152,17 @@ public class PoseEstimationLidarAgent : Agent
         seamEnv seamPoint = null;
         if (envParameters == null)
         {
-            envParameters = xmlloader.instanciateScene(envRoot, UnityEngine.Random.Range(0,16));
-            // envParameters = xmlloader.instanciateScene(envRoot, docIndex);
+            // envParameters = xmlloader.instanciateScene(envRoot, UnityEngine.Random.Range(0,16));
             // docIndex = 0;
+            var id = this.parent.parent.gameObject.name.Split('_');
+            int.TryParse(id.Last(), out docIndex);
+            docIndex -=1;
+            if (docIndex < 0)
+            {
+                docIndex = 0;
+            }
+            Debug.Log(docIndex);
+            envParameters = xmlloader.instanciateScene(envRoot, docIndex);
             pointIndex = 0;
         }
         bool correctTool = false;
@@ -156,9 +176,11 @@ public class PoseEstimationLidarAgent : Agent
             else
             {
                 // get new doc and new point
-                envParameters = xmlloader.instanciateScene(envRoot, UnityEngine.Random.Range(0,xmlloader.instMax));
-                // docIndex+=1;
-                // envParameters = xmlloader.instanciateScene(envRoot, docIndex);
+                // envParameters = xmlloader.instanciateScene(envRoot, UnityEngine.Random.Range(0,xmlloader.instMax));
+                // docIndex+=1; 
+                Debug.Log("finished doc: " + docIndex.ToString());
+                docIndex += numOfParallelInstances;
+                envParameters = xmlloader.instanciateScene(envRoot, docIndex);
                 pointIndex = 0;
                 seamPoint = envParameters.envPoints[pointIndex];
             }
@@ -260,7 +282,7 @@ public class PoseEstimationLidarAgent : Agent
     {
         // Debug.Log(steps);
         collisionState = CollisionCheck();
-        if (!collisionState && (steps < 3))
+        if (!collisionState && (steps < minSteps))
         {
             Debug.Log($"skip, {minSteps}");
             SetReward(5*PUNISHMENT_PER_STEP);
@@ -280,10 +302,6 @@ public class PoseEstimationLidarAgent : Agent
             // if ((actionBuffers.DiscreteActions[2]==1))
             if ((actionBuffers.DiscreteActions[2]==1) && (collisionState ==false))
             {
-                if (currentReward < 0f)
-                {
-                    Debug.Log(currentReward);
-                }
                 // Debug.Log($"finished {currentReward}");
                 Debug.Log($"finished success");
                 // Debug.Log(currentReward);
@@ -291,11 +309,11 @@ public class PoseEstimationLidarAgent : Agent
                 EndEpisode();
             }
         }
-        if ((steps > 401))
+        if ((steps >= 400))
         {
             Debug.Log("failed");
             // Debug.Log($"failed {currentReward}");
-            SetReward(currentReward);
+            // SetReward(currentReward);
             SetReward(-1f);
             EndEpisode();
         }

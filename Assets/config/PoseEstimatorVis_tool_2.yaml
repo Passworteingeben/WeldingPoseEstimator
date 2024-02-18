@@ -24,7 +24,7 @@ behaviors:
     behavioral_cloning:
         strength: 0.9
         steps: 15000
-        demo_path: Assets/Demonstrations/PoseEstimatorLidar_tool_2.demo
+        demo_path: Assets/Demonstrations/PoseEstimatorVis_tool_2.demo
     max_steps: 1e7
     time_horizon: 64 # 64
     summary_freq: 10000
