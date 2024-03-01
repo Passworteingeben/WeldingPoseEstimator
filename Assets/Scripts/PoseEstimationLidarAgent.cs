@@ -65,7 +65,7 @@ public class PoseEstimationLidarAgent : Agent
     private Transform trainingArea;
     private bool showColor = true;
 
-    public int toolType = 1; // 1 = MRW510_10GH or 2 = TAND_GERAD_DD
+    public int toolType = 2; // 1 = MRW510_10GH or 2 = TAND_GERAD_DD
 
     private int docIndex=0;
     private int pointIndex=0;
@@ -371,8 +371,8 @@ public class PoseEstimationLidarAgent : Agent
     {
         var discreteActions = actionBuffersOut.DiscreteActions;
         // Debug.Log(collisionState);
-        if (!collisionState)
-        // if (Input.GetKey(KeyCode.Space))
+        // if (!collisionState)
+        if (Input.GetKey(KeyCode.Space))
         {
             discreteActions[2] = 1;
         }

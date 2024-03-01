@@ -47,10 +47,11 @@ public class xmlLoader : MonoBehaviour
     public string PATH_TORCH_2 = "ToolData/TAND_GERAD_DD";
     // public Material material;
 
-    private string pathToXmls = "xmlData";
-    private string pathToMeshes = "MeshInputData";
+    // private string pathToXmls = "xmlData";
+    // private string pathToMeshes = "MeshInputData";
     // private string pathToXmls = "TestData/xmlData";
-    // private string pathToMeshes = "TestData/MeshInputData";
+    private string pathToXmls = "TestData/all";
+    private string pathToMeshes = "TestData/MeshInputData";
     private string[] instanceNames;
     // public string path = "xmlData/201910204483_R1.xml";
     // public string path = "xmlData/202110184743_R3.xml";
@@ -82,8 +83,7 @@ public class xmlLoader : MonoBehaviour
         // getNewDoc(instanceNames[0]);
         // instanciateScene(instanceNames[0]);
         // loadFull("xmlData/" + instanceNames[0]);
-        // Debug.Log(instanceNames[0]);
-        // loadFull("xmlData/" + instanceNames[0]);
+        // loadFull("TestData/all/" + instanceNames[0]);
 
         if (ms==null)
         {
@@ -142,8 +142,7 @@ public class xmlLoader : MonoBehaviour
         envRoot.transform.localEulerAngles = Vector3.zero;
         // Debug.Log(instanceNames[docIndex]);
         // instantiate obstacle mesh
-        Debug.Log(instanceNames[docIndex]);
-        Debug.Log(pathToMeshes+"/"+instanceNames[docIndex]);
+        // Debug.Log("Loading mesh: " + pathToMeshes+"/"+instanceNames[docIndex]);
         GameObject obstacleMesh = load_mesh(pathToMeshes+"/"+instanceNames[docIndex], instanceNames[docIndex]);
         // obstacleMesh.transform.SetParent(envRoot.transform);
         GameObject decomposedMesh = ms.SplitGameObject(obstacleMesh);
@@ -160,7 +159,7 @@ public class xmlLoader : MonoBehaviour
         // read all positions and add to scene
         foreach (var seam in xdoc.seamList)
         {
-            for (int i = 0; i < seam.pointList.Count; i++)
+            for (int i = 0; i < seam.frameList.Count; i++)
             {
                 // GameObject go = GameObject.Instantiate(torch_1, seam.pointList[0].pos, Quaternion.identity);
                 // Vector3 rot = AnglesFromFrame(seam.frameList[0]);
@@ -255,10 +254,9 @@ public class xmlLoader : MonoBehaviour
     public xmlDoc getNewDoc(int docIndex)
     {
         // still a new doc available
-        // string path = "xmlData/" + instanceNames[docIndex];
-        string path = pathToXmls + "/" + instanceNames[docIndex];
         // remove ending before reading
-        Debug.Log(path);
+        string path = pathToXmls + "/" + instanceNames[docIndex];
+        // Debug.Log("Loading XML : " + path);
         return new xmlDoc(path);
     }
 
@@ -369,7 +367,7 @@ public class xmlLoader : MonoBehaviour
         return tf;
     }
 
-    // // LEGACY
+
     public void loadFull(string path)
     {
         GameObject root = new GameObject("root");
@@ -379,11 +377,12 @@ public class xmlLoader : MonoBehaviour
 
         foreach (var seam in xdoc.seamList)
         {
-            for (int i = 0; i < seam.pointList.Count; i++)
+            for (int i = 0; i < seam.frameList.Count; i++)
             {
                 // GameObject go = GameObject.Instantiate(torch_1, seam.pointList[0].pos, Quaternion.identity);
                 // Vector3 rot = AnglesFromFrame(seam.frameList[0]);
                 // go.transform.localEulerAngles = rot;
+                // Debug.Log($"ID is : {seam.ID}");
                 Vector3 pos =seam.frameList[i].pos;
                 pos.x = -pos.x;
                 GameObject go;

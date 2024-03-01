@@ -31,6 +31,7 @@ namespace xmlClass
         public int ZRotLock;
         public int WkzWkl;
         public string WkzName;
+        public string ID;
 
         public List<pointClass> pointList = new List<pointClass>();
 
@@ -40,6 +41,7 @@ namespace xmlClass
         {
             this.index = index;
             name = doc.Attribute("Name").Value;
+            // ID = doc.Attribute("ID").Value;
             WkzName = doc.Attribute("WkzName").Value;
             ZRotLock = int.Parse(doc.Attribute("ZRotLock").Value);
             WkzWkl = int.Parse(doc.Attribute("WkzWkl").Value);
