@@ -68,11 +68,6 @@ public class MeshSplitter : MonoBehaviour
         // Iterate through the triangles to get faces
         for (int i = 0; i < triangles.Length; i += 3)
         {
-            GameObject newObject = new GameObject($"DecomposedPart_{i}");
-            newObject.transform.SetParent(root.transform);
-            newObject.tag = "obstacle";
-            MeshFilter mf = newObject.AddComponent<MeshFilter>(); //.mesh = decomposedMeshes[i];
-            MeshRenderer renderer = newObject.AddComponent<MeshRenderer>();
             // Get the three vertices of the face
             Vector3 vertex1 = vertices[triangles[i]];
             Vector3 vertex2 = vertices[triangles[i + 1]];
@@ -80,7 +75,21 @@ public class MeshSplitter : MonoBehaviour
 
             Vector3 v1 = vertex2 - vertex1;
             Vector3 v2 = vertex3 - vertex1;
-
+            float triArea = triangleArea(v1,v2); 
+            if (triArea < 0.01f)
+            {
+                // triangle is empty
+                continue;
+            }
+            if (triArea < 1.0f)
+            {
+                Debug.Log($"This is triangle area : {triArea}");
+            }
+            GameObject newObject = new GameObject($"DecomposedPart_{i}");
+            newObject.transform.SetParent(root.transform);
+            newObject.tag = "obstacle";
+            MeshFilter mf = newObject.AddComponent<MeshFilter>(); //.mesh = decomposedMeshes[i];
+            MeshRenderer renderer = newObject.AddComponent<MeshRenderer>();
             // Calculate the cross product (perpendicular to the plane)
             Vector3 normal = Vector3.Cross(v1, v2).normalized;
             MeshOrientation orient = newObject.AddComponent<MeshOrientation>();
@@ -119,5 +128,11 @@ public class MeshSplitter : MonoBehaviour
             mc.convex=true;
         }
         return root;
+    }
+
+    public static float triangleArea(Vector3 side1, Vector3 side2)
+    {
+        // The area of the triangle is half the magnitude of the cross product of two sides
+        return 0.5f * Vector3.Cross(side1, side2).magnitude;
     }
 }
